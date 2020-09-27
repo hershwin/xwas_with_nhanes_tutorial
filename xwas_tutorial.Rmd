@@ -9,7 +9,7 @@ output:
 ## Implement code to execute an X-wide association study (XWAS)! 
 - we will implement starter code to execute an X-wide association study (XWAS) analysis to  exposure variables associated with telomere length in NHANES 1999-2002 participants
 - X-wide association study (XWAS) is a data-driven method to find what variables in the set 'X' are associated with a phenotype (call it Y, e.g., telomere length)
-- What are telomeres?: https://en.wikipedia.org/wiki/Telomere
+- What are telomeres?: https://en.wikipedia.org/wiki/Telomere (1 pt)
 
 ### Contact information:
 - Chirag J Patel (chirag <at> hms dot harvard dot edu)
@@ -78,7 +78,7 @@ To focus on an XWAS on `TELOMEAN`, we will only focus only on variables present 
 VarDescription.telo <- subset(VarDescription, series == '1999-2000' | series == '2001-2002')
 ```
 
-How many variables in each category by survey year?
+How many variables in each category by survey year? (1 pt)
 ```{r how_many_X_variables}
 VarDescription.telo$category <- factor(VarDescription.telo$category,levels=names(sort(table(VarDescription.telo$category), decreasing=TRUE)))
 ggplot(VarDescription.telo, aes(x=category, fill=series)) + geom_bar(stat="count", width=0.7, position = position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -101,7 +101,7 @@ useTheseCategories <- sort(useTheseCategories) # store pre-sorted for easier pro
 VarDescription.telo <- VarDescription.telo[VarDescription.telo$category %in% useTheseCategories, ]
 exposureVars <- unique(VarDescription.telo$var)
 M <- length(exposureVars)
-M # the numbner of X variables in our XWAS
+M # the number of X variables in our XWAS
 ```
 
 
@@ -132,12 +132,12 @@ dsn <- svydesign(ids=~SDMVPSU, strata=~SDMVSTRA, weight=~WTMEC4YR, nest=T, data=
 
 ##### 3: Visualizing the Y variables, telomere length
 
-We will now view the distribution of the variables 
+We will now view the distribution of the variables (2 pt)
 ```{r}
 svyhist(~TELOMEAN, dsn)
 svyplot(TELOMEAN ~ RIDAGEYR, dsn, xlab='Age(years)', ylab='Telomere length in bp', style='transparent', xlim=c(20, 80)) 
 svyplot(TELOMEAN ~ RIDAGEYR, dsn, xlab='Age(years)', ylab='Telomere length in bp', style='transparent', xlim=c(20, 80), ylim=c(0, 4))
-# what is the mean and the variance of telomeres?
+what is the mean and the variance of telomeres? 
 svymean(~TELOMEAN, dsn, na.rm = T)
 svyvar(~TELOMEAN, dsn, na.rm= T)
 sqrt(svyvar(~TELOMEAN, dsn, na.rm= T))
@@ -155,16 +155,16 @@ Lets estimate the association size (or correlation) using linear regression.
 mod <- svyglm(TELOMEAN ~ RIDAGEYR + RIDAGEYR2 +  female + black + mexican + other_hispanic + other_eth + INDFMPIR, dsn)
 ```
 
-- How large are the association sizes for telomere length?
-- What is the interpretation of each coefficient in telomere length? Which variable dominates, if any? 
-- which ones can you say are "statistically" not different than zero?
-- interpret the coefficients.
+- How large are the association sizes for telomere length? (1 pt)
+- What is the interpretation of each coefficient in telomere length? Which variable dominates, if any? (1 pt)
+- which ones can you say are "statistically" not different than zero? (1 pt)
+- interpret the coefficients. (2 pt)
 
 ```{r}
 summary(mod)
 ```
 
-One can also scale the TELOMEAN variable (as we did in the paper) by the standard deviation - how does this change the interpretation?
+One can also scale the TELOMEAN variable (as we did in the paper) by the standard deviation - how does this change the interpretation? (1 pt)
 ```{r telomere_demographics}
 mod <- svyglm(I(scale(TELOMEAN)) ~ RIDAGEYR + RIDAGEYR2 +  female + black + mexican + other_hispanic + other_eth + INDFMPIR, dsn)
 summary(mod)
@@ -209,7 +209,7 @@ Recall the pseudo-algorithm:
 4. multiplicity_correct(association_list)
 
 
-First we define some 'helper' functions that do the individual association tests (using linear regression) in step 3a:
+First we define some 'helper' functions that do the individual association tests (using linear regression) in step 3a (1 pt):
 `buildFormula` builds a formula out of a string for linear regression
 ```{r build_formula}
 buildFormula <- function(exposureVar, adjustmentVariables = adjustfor) {
@@ -276,16 +276,16 @@ knitr::kable(subset(xwas_association_list, fdr < 0.05)[, c('var_desc', 'estimate
 ```
 
 ### Required Questions:
-1. What does telomere length measure?
+1. What does telomere length measure? (1 pt)
 
-2. What is your interpretation of the association sizes and pvalues for your XWAS?
+2. What is your interpretation of the association sizes and pvalues for your XWAS? (1 pt)
 - Hint: "For a 1SD change in the natural log of the biomarker of exposure = ???? change in telomere length..."
 
-3. Recall the chunk of code under heading 4, "Conducting initial survey-weighted analyses of the Y and X". What are the associations between sociodemographic factors for a basepair change in mean telomere length?
+3. Recall the chunk of code under heading 4, "Conducting initial survey-weighted analyses of the Y and X". What are the associations between sociodemographic factors for a basepair change in mean telomere length? (1 pt)
 
 4. Take a look at the GWAS catalog for genotypes associated with telomere length using the GWAS catalog:
 (e.g., https://www.ebi.ac.uk/gwas/efotraits/EFO_0004505)
-What is the max association size between any variant implicated in the GWASs and telomere length?
+What is the max association size between any variant implicated in the GWASs and telomere length? (1 pt)
 
 
 
